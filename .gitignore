@@ -1,0 +1,10 @@
+*.gb
+*.o
+*.gif
+*.sav
+*.swp
+*.swn
+*.swo
+*~
+*.sym
+*.map
