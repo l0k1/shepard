@@ -1,6 +1,10 @@
 # SHEPARD
 
-A minimal Game Boy game.
+A minimal Game Boy game. A sort-of reverse Breakout.
+
+The goal is to make a game with less than 1024 bytes.
+
+Currently a work-in-progress. Nightly (or weekly) builds will be posted when there's something of note.
 
 ### Building
 
