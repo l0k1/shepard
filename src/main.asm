@@ -38,21 +38,36 @@ RST_38:
 
    SECTION  "V-Blank IRQ Vector",ROM0[$40]
 VBL_VECT:
-   call V_Blank_Int
+   ; this runs over the LCD, TIMER, and SERIAL interrupts. don't use those.
+   push AF
+   push BC
+   push DE
+   push HL
+
+   ld A,[GFX_UPDATE_FLAGS]
+   bit 0,A
+   call nz,DMA
+   xor A
+   ld [GFX_UPDATE_FLAGS],A
+
+   pop HL
+   pop DE
+   pop BC
+   pop AF
+
    reti
    
-   SECTION  "LCD IRQ Vector",ROM0[$48]
-LCD_VECT:
-   reti
+;   SECTION  "LCD IRQ Vector",ROM0[$48]
+;LCD_VECT:
+;   reti
 
-   SECTION  "Timer IRQ Vector",ROM0[$50]
-TIMER_VECT:
-   call Timer_Update
-   reti
+;   SECTION  "Timer IRQ Vector",ROM0[$50]
+;TIMER_VECT:
+;   reti
 
-   SECTION  "Serial IRQ Vector",ROM0[$58]
-SERIAL_VECT:
-   reti
+;   SECTION  "Serial IRQ Vector",ROM0[$58]
+;SERIAL_VECT:
+;   reti
 
    SECTION  "Joypad IRQ Vector",ROM0[$60]
 JOYPAD_VECT:
@@ -123,48 +138,94 @@ Main:
 
    di
 
-   ld SP, $DE00      ;init the stack pointer
+   ld SP, $DEFE      ;init the stack pointer
    ld A,%11100100    ;set the pallete color to standard.
    ld [rBGP],A
    ld [rOBP0],A
    ld [rOBP1],A
 
-   ld HL,$C000       ;init the internal ram from $C000 to $DFFF
-   ld DE,$2000
-.ram_init
+   ;ld A,%11010111    ; LCDC settings
+   ;ld [rLCDC],A
+
+   xor A
+   ld [rSCX],A
+   ld [rSCY],A
+   ld [rIF],A
+
+   ; not initing my ram. sue me.
+   
+   ; turn off the LCD
+   ld HL,rLY
+.wait_vblank_beginning_loop
+   ld A,[HL]
+   cp $90
+   jr nz,.wait_vblank_beginning_loop
+
+   ld A,%01010011
+   ld [rLCDC],A
+
+   ; load the sprites into TDT1
+   ld HL,Shepard
+   ld DE,TDT1+$10       ; leave the first tile alone (it's blank)
+.copy_to_tdt
+   ld A,[HL+]
+   ld [DE],A
+   inc DE
+   ld A,E
+   cp $40               ; because the TDT is $xx00, and we want to load $40 tiles, we can just check for when our TDT-pointing register has $40 in the least significant register.
+   jr nz,.copy_to_tdt
+
+   ; clear out the bg map from 9904 to 992F (nintendo logo)
+   ld HL,$9904
+.clear_bg_map
    xor A
    ld [HL+],A
-   dec DE
-   ld A,E
-   or D
-   jp nz,.ram_init
-   
-   call Wait_VBlank_Beginning
-   call DMA          ;clear out the OAM_RAM to all zeros.
+   ld A,L
+   cp $30
+   jr nz,.clear_bg_map
 
-   ld A,$01          ;make sure rom bank 1 is selected in switchable ROM.
-   ld [rROMB0],A
+   ; set up for our first DMA
+   ld HL,OAM_MIRROR
+   ld A,$80          ; player X
+   ld [HL+],A
+   ld A,$A0          ; player Y
+   ld [HL+],A
+   ld A,$01          ; player sprite
+   ld [HL+],A
+.loop                ; clean out the rest of OAM
    xor A
-   ld [rROMB1],A
-   
-   ;xor A
-   ld [rRAMB],A      ;make sure ERAM bank 0 is selected.
-   ld [VRAMSP],A     ;init ram pointers
-   ld [OAMRAMP],A    ;see globals.asm for specifics
-   ld A,$C0          ;initialize internal ram. this will need
-   ld [IRAMPH],A     ;to be updated as the globals.asm file grows
-   ld A,$0B
-   ld [IRAMPL],A
-   ld A,$FF
-   ld [VRAMBP],A
-   
-   ;setup/start timers
-   xor A
-   ld [rIF],A        ;set all interrupt flags to 0.
-   ld [rTMA],A       ;set timer modulo to zero
-   ld A,%00000100    ;turn on timer, set it to 4.096 kHz
-   ld [rTAC],A
-   ld [rIE],A        ;set the timer interrupt flag.
+   ld [HL+],A
+   ld A,L
+   cp $A0
+   jr nz,.loop
+    
+   ld A,%00010001
+   ld [rIE],A        ; joypad and v-blank interrupts, yo 
+
+   ld A,%11010011    ; re enable the LCD
+   ld [rLCDC],A
 
    ei
+
+   ;just as a test
+   ld A,$AC
+   ld [$DFA0],A
+   
+   ld HL,$DF04
+   ld A,$80
+   ld [HL+],A
+   ld A,$40
+   ld [HL+],A
+   ld a,$03          ; parasite!
+   ld [HL+],A
+   xor A
+   ld [HL],A
+
+   ld A,$01
+   ld [GFX_UPDATE_FLAGS],A
+
+.main
+   halt
+   nop
+   jp .main
 

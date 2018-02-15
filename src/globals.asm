@@ -9,86 +9,17 @@ GLOBALS_ASM SET 1
 ; Joypad Data, stored in format: 1 - button pressed, 0 - button not pressed.
 JOYPAD   EQU $C000
 ; Check main.asm for timing/interval info.
-TIMERT   EQU $C001
-TIMER1   EQU $C002
-TIMER2   EQU $C003
-TIMER3   EQU $C004
-TIMER4   EQU $C005
-RANDOM1  EQU $C006
-RANDOM2  EQU $C007
-;RAM pointers
-VRAMSP   EQU $C008      ;vram sprite pointer (tdt1)
-VRAMBP   EQU $C009      ;vram bg pointer     (tdt2)
-OAMRAMP  EQU $C00A      ;oam mirror ram pointer ($CF00)
-ERAMPH   EQU $BFFE      ;external ram pointer - high byte
-ERAMPL   EQU $BFFF      ;external ram pointer - low byte
-IRAMPH   EQU $DFFE      ;internal ram pointer - high byte
-IRAMPL   EQU $DFFF      ;internal ram pointer - low byte
 
-; Store the address of which map/area we currently have loaded
-MAPUPPER    EQU $C00B
-MAPLOWER    EQU $C00C
-
-; Map XY info
-; map dimensions
-MAPX        EQU $C00D
-MAPY        EQU $C00E
-
-MAP_TILESET EQU $C00F
-
-; currently loaded map bank
-MAP_BANK    EQU $C01C
-MAP_ADDR_U  EQU $C01D
-MAP_ADDR_L  EQU $C01E
-
-; Map default tile
-MAPDEFAULTTILE  EQU $C011
-
-; Map x/y position currently loaded
-; x/y of upper left-most tile
-MAPXLOADED  EQU $C012
-MAPYLOADED  EQU $C013
-
-
-; Player position in the map
-PPOSX       EQU $C014   ; upper x coord of the tile the player is on
-PPOSY       EQU $C015   ; upper y coord
-PPOSBIT     EQU $C016   ; first four bits are which x pixel the player is at
-                        ; second four bits are for the y pixel
-PDIR        EQU $C017   ; player direction - may include more data in this later
-                        ; LSB:
-                        ; %0001 -> player facing down
-                        ; %0010 -> player facing left
-                        ; %0100 -> player facing up
-                        ; %1000 -> player facing right
-                        
-CBANKU      EQU $C018   ; current bank MSB
-CBANKL      EQU $C019   ; current bank LSB
-PBANKU      EQU $C01A   ; previous bank MSB
-PBANKL      EQU $C01B   ; previous bank LSB
-
-; "dynamic" memory allocations, available to be rewritten
-TEMP1       EQU $C01E
-TEMP2       EQU $C01F
-TEMP3       EQU $C020
-TEMP4       EQU $C021
-
-; latest address = $C01E
+PLAYER_X EQU $DF00
+PLAYER_Y EQU $DF01
 
 ;OAM Mirror. Put sprite updates here.
 OAM_MIRROR EQU $DF00
 ;same as OAM_MIRROR, but for use in the DMA routine.
 OAM_MIRROR_DMA EQU $DF
-;Used to update the background.
-;format is (high byte of address in bg Map) (low byte of address) (tile) - 3 bytes
-;there is exactly 41 ($29) bytes between here and $DF00, so just enough
-;room with no overlap.
-BG_UPDATE_ARRAY EQU $DED6
 ;GFX update flags
 ;if bit 0 = 1, perform DMA update.
-;if bit 1 = 1, perform background update.
-;if bit 2 = 1, disable LCD
-GFX_UPDATE_FLAGS EQU $DF60
+GFX_UPDATE_FLAGS EQU $DFA0
 
 ;* Hardware definitions
 ;Joypad stuff

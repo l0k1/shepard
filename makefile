@@ -15,8 +15,8 @@ SOURCES=./src/interrupts.asm\
 		./src/lcd_interface.asm\
 		./src/main.asm\
 		./src/world_interface.asm\
-		./src/data_manipulation.asm\
-		./src/math.asm
+		./src/math.asm\
+		./src/sprites.asm
 OBJECTS=$(SOURCES:.asm=.o)
 
 
