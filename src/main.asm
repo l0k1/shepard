@@ -38,17 +38,13 @@ RST_38:
 
    SECTION  "V-Blank IRQ Vector",ROM0[$40]
 VBL_VECT:
-   ; this runs over the LCD, TIMER, and SERIAL interrupts. don't use those.
+   ; this runs over the LCD, and TIMER interrupts. don't use those.
    push AF
    push BC
    push DE
    push HL
 
-   ld A,[GFX_UPDATE_FLAGS]
-   bit 0,A
-   call nz,DMA
-   xor A
-   ld [GFX_UPDATE_FLAGS],A
+   call DMA
 
    pop HL
    pop DE
@@ -207,25 +203,8 @@ Main:
 
    ei
 
-   ;just as a test
-   ld A,$AC
-   ld [$DFA0],A
-   
-   ld HL,$DF04
-   ld A,$80
-   ld [HL+],A
-   ld A,$40
-   ld [HL+],A
-   ld a,$03          ; parasite!
-   ld [HL+],A
-   xor A
-   ld [HL],A
-
-   ld A,$01
-   ld [GFX_UPDATE_FLAGS],A
-
 .main
-   halt
+   call 
    nop
    jp .main
 
