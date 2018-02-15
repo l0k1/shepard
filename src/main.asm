@@ -147,6 +147,7 @@ Main:
    ld [rSCX],A
    ld [rSCY],A
    ld [rIF],A
+   ld [JOYPAD],A
 
    ; not initing my ram. sue me.
    
@@ -182,9 +183,9 @@ Main:
 
    ; set up for our first DMA
    ld HL,OAM_MIRROR
-   ld A,$80          ; player X
+   ld A,$4C          ; player Y
    ld [HL+],A
-   ld A,$A0          ; player Y
+   ld A,$44          ; player X
    ld [HL+],A
    ld A,$01          ; player sprite
    ld [HL+],A
@@ -204,7 +205,8 @@ Main:
    ei
 
 .main
-   call 
+   call World_Interface
+   halt
    nop
    jp .main
 

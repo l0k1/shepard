@@ -34,15 +34,39 @@ World_Interface:
    ret
    
 .down_pressed
+   ld HL,$DF00    ; player Y
+   ld [HL],A
+   cp $88         ; bottom of the screen
+   jr z,.skip_down
+   dec [HL]
+.skip_down
    ret
    
 .up_pressed
+   ld HL,$DF00    ; player Y
+   ld [HL],A
+   cp $00         ; top of the screen
+   jr z,.skip_up
+   inc [HL]
+.skip_up
    ret
    
 .left_pressed
+   ld HL,$DF01    ; player X
+   ld [HL],A
+   cp $00         ; leftmost of the screen
+   jr z,.skip_left
+   dec [HL]
+.skip_left
    ret
-   
+
 .right_pressed
+   ld HL,$DF01    ; player X
+   ld [HL],A
+   cp $98
+   jr z,.skip_right
+   inc [HL]
+.skip_right
    ret
    
 .select_pressed
