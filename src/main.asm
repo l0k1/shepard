@@ -201,7 +201,7 @@ Main:
    cp $A0
    jr nz,.loop
     
-   ld A,%00010001
+   ld A,%00000001
    ld [rIE],A        ; joypad and v-blank interrupts, yo 
 
    ld A,%11010011    ; re enable the LCD
@@ -214,9 +214,10 @@ Main:
    ; only run the main loop once per frame
    ld HL,L_FLAG
    bit 0,[HL]
-   jr nz,.skip
+   jr z,.skip
    set 0,[HL]
    
+   call Controller
    call World_Interface
    
 .skip
