@@ -13,7 +13,7 @@ OUTPUT_NAME=shepard
 SOURCES=./src/interrupts.asm\
 		./src/globals.asm\
 		./src/main.asm\
-		./src/world_interface.asm\
+		./src/controller.asm\
 		./src/math.asm\
 		./src/sprites.asm
 OBJECTS=$(SOURCES:.asm=.o)
