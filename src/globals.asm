@@ -8,7 +8,8 @@ GLOBALS_ASM SET 1
 
 ; Joypad Data, stored in format: 1 - button pressed, 0 - button not pressed.
 JOYPAD   EQU $C000
-; Check main.asm for timing/interval info.
+; Loop flag - only want to run the main loop once per frame
+L_FLAG   EQU $C001
 
 PLAYER_X EQU $DF00
 PLAYER_Y EQU $DF01

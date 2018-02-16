@@ -43,6 +43,10 @@ VBL_VECT:
    push BC
    push DE
    push HL
+   
+   ; set the flag that lets the main loop run again.
+   ld HL,L_FLAG
+   set 0,[HL]
 
    call DMA
 
@@ -148,6 +152,7 @@ Main:
    ld [rSCY],A
    ld [rIF],A
    ld [JOYPAD],A
+   ld [L_FLAG],A
 
    ; not initing my ram. sue me.
    
@@ -205,8 +210,17 @@ Main:
    ei
 
 .main
+
+   ; only run the main loop once per frame
+   ld HL,L_FLAG
+   bit 0,[HL]
+   jr nz,.skip
+   set 0,[HL]
+   
    call World_Interface
+   
+.skip
    halt
    nop
-   jp .main
+   jr .main
 
