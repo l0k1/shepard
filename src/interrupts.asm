@@ -1,21 +1,26 @@
-;Controller routines
-;dulr - stseba
-;JOYPAD data is stored as:
-;   1 - pressed, 0 - not pressed
-;   Bit 7 - Down
-;   Bit 6 - Up
-;   Bit 5 - Left
-;   Bit 4 - Right
-;   Bit 3 - Start
-;   Bit 2 - Select
-;   Bit 1 - B-button
-;   Bit 0 - A-button
+; interrupt functions.
+; for now, only using the controller interrupt.
+
 
 INCLUDE "globals.asm"
 EXPORT Controller
-EXPORT V_Blank_Int
+EXPORT DMA
 
    SECTION "Controller Status",ROM0
+   
+   ;Controller routines
+   ;dulr - stseba
+   ;JOYPAD data is stored as:
+   ;   1 - pressed, 0 - not pressed
+   ;   Bit 7 - Down
+   ;   Bit 6 - Up
+   ;   Bit 5 - Left
+   ;   Bit 4 - Right
+   ;   Bit 3 - Start
+   ;   Bit 2 - Select
+   ;   Bit 1 - B-button
+   ;   Bit 0 - A-button
+   
 Controller:
    push AF           ;Push AF onto the stack to restore later.
    push BC           ;Push B onto the stack to restore later.
@@ -44,30 +49,31 @@ Controller:
    pop BC            ;Restore B.
    pop AF            ;Restore AF.
    ret               ;Exit
-
-   SECTION "V Blank Interrupt",ROM0
-   ; DMA and Background_Update are both in lcd_interface.asm
-   ; VBlank lasts ~4530 cycles
-   ; All code in the interrupt must be less than 4530 cycles
-   ; If my counting is right, this is currently at a maximum
-   ; of 2552 cycles if all code is ran.
    
-                                 ; initial call is 24 cycles
-V_Blank_Int:
-   push AF                       ; 64 cycles for pushing
-   push BC
-   push DE
-   push HL
+   SECTION "DMA",ROM0
+   ;DMA: copies a dma routine to HRAM [$FF80], and then calls that routine.
+   ;Interrupts are not enabled/disabled here.
+   ;This routine destroys all registers.
+   ;This routine overwrites $FF80 to $FF8A of HRAM.
+   ;OAM_MIRROR_DMA is defined in globals.asm.
+   ;556 cycles
+DMA:
+   ld HL,_HRAM
+   ld BC,.dma_routine      ;we want the address that .dma_routine is at
+   ld D,$0A                ;number of bytes in the .dma_routine
+.load_dma_loop
+   ld A,[BC]               ;copy .dma_loop to HRAM
+   ld [HL+],A
+   inc BC
+   dec D
+   jr nz,.load_dma_loop
+   call _HRAM              ;call the DMA routine.
+   ret
    
-   ld A,[GFX_UPDATE_FLAGS]       ; 16 cycles
-   bit 0,A                       ; 8 cycles
-   call nz,DMA                   ; 24 if condition - routine is 556 cycles
-   xor A                         ; 4 cycles
-   ld [GFX_UPDATE_FLAGS],A       ; 16 cycles
-   
-   pop HL                        ; 48 cycles for popping
-   pop DE
-   pop BC
-   pop AF
-   
-   ret                           ; 16 + 16 for reti in main.asm
+.dma_routine               ;this is the routine which will be copied to $FF80+
+   ld A,OAM_MIRROR_DMA     ;2 bytes - this routine shouldn't be called directly.
+   ldh [$46],A             ;2 bytes - need to be explicit with the "ldh". this is [rDMA]
+   ld A,$28                ;2 bytes - waiting loop, 160 *micro*seconds
+   dec A                   ;1 byte  -
+   DB $20,$FD              ;2 bytes - opcode for jr nz,(go back to dec A) 
+   ret                     ;1 byte
