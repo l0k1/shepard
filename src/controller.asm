@@ -3,87 +3,75 @@
 
 INCLUDE "globals.asm"
 
-Export World_Interface
+Export Controller
    
    SECTION "World Interfacing",ROM0
-World_Interface:
-   ld A,[JOYPAD]              ;get joypad data
-   bit J_A,A                  ;check each button, and process accordingly
-   call nz,.a_pressed         ;all these calls are ugly to me
-   bit J_B,A                  ;but its the best way to get the functionality
-   call nz,.b_pressed         ;that i want
+Controller:
+   ld A,%00100000
+   ld [rP1],A                 ; check P14 first
+   ld A,[rP1]
+   ld A,[rP1]                 ; wait a few cycles due to bounce
+   cpl
+   and $0F                    ; keep only LSB
+   swap A
+   ld B,A                     ; store it in B
+   ld A,%00010000
+   ld [rP1],A                 ; now check P15
+   swap [HL]                  ; save a couple bytes, vs using
+   swap [HL]                  ; the traditional ld A,[rP1]
+   swap [HL]
+   swap [HL]
+   ld A,[rP1]
+   ld A,[rP1]                 ; bounce is compensated for
+   cpl
+   and $0F                    ; keep LSB again
+   or B                       ; combine A and B into A
+   ld B,A                     ; save it in B
+   ld A,%00110000             ; deselect the registers
+   ld [rP1],A
+   
+   ;bit J_A,A
+   ;bit J_B,A
+   ld A,B
    bit J_DOWN,A
-   call nz,.down_pressed
-   bit J_LEFT,A
-   call nz,.left_pressed
-   bit J_UP,A
-   call nz,.up_pressed
-   bit J_RIGHT,A
-   call nz,.right_pressed
-   bit J_SELECT,A
-   call nz,.select_pressed
-   bit J_START,A
-   call nz,.start_pressed
-.end_joypad_update
-   ret                        ;after calls, this will be the end point
-   
-.a_pressed
-   ret
-   
-.b_pressed
-   ret
-   
-.down_pressed
-   push AF
-   ld HL,$DF00    ; player 
+   jr z,.check_left
+   ld HL,$DF00
    ld A,[HL]
-   cp $98         ; bottom of the screen
-   jr z,.skip_down
+   cp $98
+   jr z,.check_left
    inc [HL]
-.skip_down
-   pop AF
-   ret
-   
-.up_pressed
-   push AF
-   ld HL,$DF00    ; player Y
-   ld A,[HL]
-   cp $10         ; top of the screen
-   jr z,.skip_up
-   dec [HL]
-.skip_up
-   pop AF
-   ret
-   
-.left_pressed
-   push AF
-   ld HL,$DF01    ; player X
-   ld A,[HL]
-   cp $08         ; leftmost of the screen
-   jr z,.skip_left
-   dec [HL]
-.skip_left
-   pop AF
-   ret
 
-.right_pressed
-   push AF
-   ld HL,$DF01    ; player X
+.check_left
+   ld A,B
+   bit J_LEFT,A
+   jr z,.check_up
+   ld HL,$DF01
+   ld A,[HL]
+   cp $08
+   jr z,.check_up
+   dec [HL]
+
+.check_up
+   ld A,B
+   bit J_UP,A
+   jr z,.check_right
+   ld HL,$DF00
+   ld A,[HL]
+   cp $10
+   jr z,.check_right
+   dec [HL]
+
+.check_right
+   ld A,B
+   bit J_RIGHT,A
+   jr z,.end_joypad_update
+   ld HL,$DF01
    ld A,[HL]
    cp $A0
-   jr z,.skip_right
+   jr z,.end_joypad_update
    inc [HL]
-.skip_right
-   pop AF
+
+   ;bit J_SELECT,A
+   ;bit J_START,A
+.end_joypad_update
    ret
-   
-.select_pressed
-   ret
-   
-.start_pressed
-   ret
-   
-.return_early                 ;if we need to return early after a button press,
-   inc SP                     ;and stop processing other buttons
-   inc SP                     ;manipulate the stack to get rid of the push
-   jp .end_joypad_update      ;that the original call did.

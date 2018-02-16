@@ -1,40 +1,44 @@
 ;***************************************** SHEPARD
+; A sort of reverse breakout game.
+; The goal is to keep EVERYTHING under $400 bytes.
+; In pursuit of this goal, I may be doing some stupid stuff.
+; I'm not optimizing for CPU time, I'm optimizing for byte size.
+; If you see heresy, there's probably a reason.
+
 
 INCLUDE  "globals.asm"
 
-;***************************************** cartridge header
-
-   SECTION  "Org $00",ROM0[$00]
-RST_00:  
-   jp $100
-
-   SECTION  "Org $08",ROM0[$08]
-RST_08:  
-   jp $100
-
-   SECTION  "Org $10",ROM0[$10]
-RST_10:
-   jp $100
-
-   SECTION  "Org $18",ROM0[$18]
-RST_18:
-   jp $100
-
-   SECTION  "Org $20",ROM0[$20]
-RST_20:
-   jp $100
-
-   SECTION  "Org $28",ROM0[$28]
-RST_28:
-   jp $100
-
-   SECTION  "Org $30",ROM0[$30]
-RST_30:
-   jp $100
-
-   SECTION  "Org $38",ROM0[$38]
-RST_38:
-   jp $100
+;   SECTION  "Org $00",ROM0[$00]
+;RST_00:  
+;   jp $100
+;
+;   SECTION  "Org $08",ROM0[$08]
+;RST_08:  
+;   jp $100
+;
+;   SECTION  "Org $10",ROM0[$10]
+;RST_10:
+;   jp $100
+;
+;   SECTION  "Org $18",ROM0[$18]
+;RST_18:
+;   jp $100
+;
+;   SECTION  "Org $20",ROM0[$20]
+;RST_20:
+;   jp $100
+;
+;   SECTION  "Org $28",ROM0[$28]
+;RST_28:
+;   jp $100
+;
+;   SECTION  "Org $30",ROM0[$30]
+;RST_30:
+;   jp $100
+;
+;   SECTION  "Org $38",ROM0[$38]
+;RST_38:
+;   jp $100
 
    SECTION  "V-Blank IRQ Vector",ROM0[$40]
 VBL_VECT:
@@ -69,10 +73,9 @@ VBL_VECT:
 ;SERIAL_VECT:
 ;   reti
 
-   SECTION  "Joypad IRQ Vector",ROM0[$60]
-JOYPAD_VECT:
-   call Controller                        ;in seperate file named "controller.asm"
-   reti
+;   SECTION  "Joypad IRQ Vector",ROM0[$60]
+;JOYPAD_VECT:
+;   reti
    
    SECTION  "Start",ROM0[$100]
    nop
@@ -218,7 +221,6 @@ Main:
    set 0,[HL]
    
    call Controller
-   call World_Interface
    
 .skip
    halt
