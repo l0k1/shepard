@@ -1,11 +1,14 @@
 ; Math functions
 
+INCLUDE  "globals.asm"
+
 EXPORT Mul8
 EXPORT Mul8b
 EXPORT Mul16
 EXPORT Div8
+EXPORT Get_Random
 
-   SECTION "Math",ROM0
+   SECTION "Mul8",ROM0
    ;Multiplies DE and A, stores result in HL.
    ;Destructive
    ;taken from http://sgate.emt.bme.hu/patai/publications/z80guide/part4.html
@@ -23,7 +26,8 @@ Mul8:
    dec B
    jr nz,.mul8loop
    ret
-    
+   
+   SECTION "Mul8b",ROM0
    ;Multiply H * E, stores result in HL
    ;Destructive of HL
    ;taken from http://sgate.emt.bme.hu/patai/publications/z80guide/part4.html
@@ -46,7 +50,8 @@ Mul8b:
    pop BC
    pop AF
    ret
-  
+
+   Section "Div8",ROM0  
    ;Divide HL/D, store result in HL
    ;Destructive
    ;taken from http://sgate.emt.bme.hu/patai/publications/z80guide/part4.html
@@ -66,6 +71,7 @@ Div8:
    jr nz,.div8loop
    ret
    
+   SECTION "Mul16",ROM0
    ;Multiply BC and DE, store the result in DE, HL
    ;Destructive
    ;taken from http://sgate.emt.bme.hu/patai/publications/z80guide/part4.html
@@ -84,4 +90,15 @@ Mul16:
 .nomul16
    dec a
    jr nz,.mul16loop
+   ret
+
+   SECTION "Get Random",ROM0
+   ; update the random seed with DIV
+   ; outputs into A
+Get_Random:
+   ld A,[RANDOM]
+   ld B,A
+   ld A,[rDIV]
+   xor B
+   ld [RANDOM],A
    ret

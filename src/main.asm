@@ -154,7 +154,6 @@ Main:
    ld [rSCX],A
    ld [rSCY],A
    ld [rIF],A
-   ld [JOYPAD],A
    ld [L_FLAG],A
 
    ; not initing my ram. sue me.
@@ -203,7 +202,10 @@ Main:
    ld A,L
    cp $A0
    jr nz,.loop
-    
+   
+   ld A,$04
+   ld [OAM_POINTER],A
+ 
    ld A,%00000001
    ld [rIE],A        ; joypad and v-blank interrupts, yo 
 

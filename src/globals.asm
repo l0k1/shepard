@@ -6,10 +6,15 @@
    IF !DEF(GLOBALS_ASM)
 GLOBALS_ASM SET 1
 
-; Joypad Data, stored in format: 1 - button pressed, 0 - button not pressed.
-JOYPAD   EQU $C000
+RANDOM   EQU $C000
 ; Loop flag - only want to run the main loop once per frame
 L_FLAG   EQU $C001
+; OAM Pointer
+OAM_POINTER EQU $C002
+; Cow count
+COW_COUNT   EQU $C003
+; Parasite count
+PARA_COUNT  EQU $C004
 
 PLAYER_X EQU $DF00
 PLAYER_Y EQU $DF01
