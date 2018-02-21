@@ -154,10 +154,15 @@ Main:
    ld [rSCX],A
    ld [rSCY],A
    ld [rIF],A
-   ld [L_FLAG],A
-
-   ; not initing my ram. sue me.
    
+   ; smaller to init ram this way vs individually
+   ld E,$FF                ; 2 bytes
+   ld HL,$C001             ; 3 bytes
+.clear_ram_loop
+   ld [HL+],A              ; 1 byte
+   dec E                   ; 1 byte
+   jr nz,.clear_ram_loop   ; 2 bytes
+
    ; turn off the LCD
    ld HL,rLY
 .wait_vblank_beginning_loop
