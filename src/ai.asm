@@ -72,7 +72,7 @@ AI:
    dec E
    ld A,E
    or $00
-   jp nz,.ret              ; cancel when we reach the end of the sprites
+   jp z,.ret              ; cancel when we reach the end of the sprites
    ld A,L
    add $04
    ld L,A                  ; inc HL by 4 to check the next sprite
@@ -202,11 +202,16 @@ AI:
    
 .check_dx
    bit 1,E                 ; if delta_y < 0 and error < 0 then
-   jr z,.ret
+   jr z,.pre_return_mov
    bit 2,E
-   jr z,.ret
+   jr z,.pre_return_mov
    ld HL,PARA_X            ; x = parasite_x - 1
    dec [HL]
+
+.pre_return_mov
+   pop HL
+   pop DE
+   jp .movement
 
 .cow_movement
 .ret
