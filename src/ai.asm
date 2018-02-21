@@ -2,6 +2,8 @@
 
 INCLUDE "globals.asm"
 
+EXPORT AI
+
    SECTION "AI",ROM0
 
 AI:
