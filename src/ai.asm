@@ -42,6 +42,7 @@ AI:
    ; point HL at the y attrib for that sprite
    dec HL
    dec HL
+   dec HL
 
    call Get_Random
 
@@ -148,7 +149,7 @@ AI:
    rlc B
    ld A,B
    sub C
-   jr c,.skip_neg_error
+   jr nc,.skip_neg_error
    set 2,E                 ; e%2 has if error is negative (0 is dy and 1 is dx) - 1 is negative, 0 is positive
 .skip_neg_error
    
@@ -182,7 +183,7 @@ AI:
    rlc C
    ld A,C
    sub B
-   jr c,.skip_neg_error_y
+   jr nc,.skip_neg_error_y
    set 2,E                 ; e%2 has if error is negative (0 is dy and 1 is dx) - 1 is negative, 0 is positive
 .skip_neg_error_y
    
