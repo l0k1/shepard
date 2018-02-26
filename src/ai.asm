@@ -151,24 +151,25 @@ AI:
    sub C
    jr nc,.skip_neg_error
    set 2,E                 ; e%2 has if error is negative (0 is dy and 1 is dx) - 1 is negative, 0 is positive
-.skip_neg_error
+.skip_neg_error   
    
    ld HL,PARA_X
    bit 1,E                 ; if delta_x > 0 then x = x + 1
    jr nz,.x_is_right
    inc [HL]
+   jr .check_dy_pos
 .x_is_right                ; else x = x - 1
    dec [HL]
    
-   
+.check_dy_pos   
    bit 0,E                 ; if delta_y > 0 and error > 0 then
-   jr nz,.check_dy
+   jr nz,.check_dy_neg
    bit 2,E
-   jr nz,.check_dy
+   jr nz,.check_dy_neg
    ld HL,PARA_Y            ; y = parasite_y + 1
    inc [HL]
    
-.check_dy
+.check_dy_neg
    bit 0,E                 ; if delta_y < 0 and error < 0 then
    jr z,.ret
    bit 2,E
@@ -191,17 +192,19 @@ AI:
    bit 0,E                 ; if delta_y > 0 then y = y + 1
    jr nz,.y_is_up
    inc [HL]
+   jr .check_dx_pos
 .y_is_up                   ; else y = y - 1
    dec [HL]
    
+.check_dx_pos
    bit 1,E                 ; if delta_x > 0 and error > 0 then
-   jr nz,.check_dx
+   jr nz,.check_dx_neg
    bit 2,E
-   jr nz,.check_dx
+   jr nz,.check_dx_neg
    ld HL,PARA_X            ; x = parasite_x + 1
    inc [HL]
    
-.check_dx
+.check_dx_neg
    bit 1,E                 ; if delta_y < 0 and error < 0 then
    jr z,.pre_return_mov
    bit 2,E
