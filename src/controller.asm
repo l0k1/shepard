@@ -3,8 +3,6 @@
 
 INCLUDE "globals.asm"
 
-Export Controller
-   
    SECTION "World Interfacing",ROM0
 Controller:
    ld A,%00100000
