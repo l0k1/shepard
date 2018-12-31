@@ -6,6 +6,11 @@ The goal is to make a game with less than 1024 bytes.
 
 Currently a work-in-progress. Nightly (or weekly) builds will be posted when there's something of note.
 
+### Gameplay
+
+You are a shepard, here to protect your sheep. Monsters lurk in the night, trying to steal them away.
+Keep your sheep alive for as long as possible!
+
 ### Building
 
 [![Build Status](https://travis-ci.org/l0k1/shepard.svg?branch=master)](https://travis-ci.org/l0k1/shepard)
