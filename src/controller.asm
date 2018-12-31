@@ -4,7 +4,7 @@
 INCLUDE "globals.asm"
 
    SECTION "World Interfacing",ROM0
-Controller:
+Controller::
    ld A,%00100000
    ld [rP1],A                 ; check P14 first
    ld A,[rP1]
@@ -33,7 +33,7 @@ Controller:
    ld A,B
    bit J_DOWN,A
    jr z,.check_left
-   ld HL,$DF00
+   ld HL,PLAYER_X
    ld A,[HL]
    cp $98
    jr z,.check_left
@@ -43,7 +43,7 @@ Controller:
    ld A,B
    bit J_LEFT,A
    jr z,.check_up
-   ld HL,$DF01
+   ld HL,PLAYER_Y
    ld A,[HL]
    cp $08
    jr z,.check_up
@@ -53,7 +53,7 @@ Controller:
    ld A,B
    bit J_UP,A
    jr z,.check_right
-   ld HL,$DF00
+   ld HL,PLAYER_X
    ld A,[HL]
    cp $10
    jr z,.check_right
@@ -63,7 +63,7 @@ Controller:
    ld A,B
    bit J_RIGHT,A
    jr z,.end_joypad_update
-   ld HL,$DF01
+   ld HL,PLAYER_Y
    ld A,[HL]
    cp $A0
    jr z,.end_joypad_update
