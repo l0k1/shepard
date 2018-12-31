@@ -2,11 +2,9 @@
 
 INCLUDE "globals.asm"
 
-EXPORT AI
-
    SECTION "AI",ROM0
 
-AI:
+AI::
    ; check if we have any parasites
    ; max 4 parasites
    ld A,[PARA_COUNT]
