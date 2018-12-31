@@ -1,6 +1,6 @@
 # SHEPARD
 
-A minimal Game Boy game. A sort-of reverse Breakout.
+A minimal Game Boy game.
 
 The goal is to make a game with less than 1024 bytes.
 
@@ -18,6 +18,6 @@ Dependencies are [RGBDS](https://github.com/bentley/rgbds) and make.
 
 To make:
 
-    cd ./superhappyfunbubbletime/
+    cd ./shepard/
     make
 
