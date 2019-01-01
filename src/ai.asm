@@ -66,7 +66,7 @@ AI::
 ; movement
 ; do this one sprite at a time
    ld E,$28
-   ld HL,OAM_MIRROR + $03
+   ld HL,OAM_MIRROR + $02
 .movement
    dec E
    ld A,E
