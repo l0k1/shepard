@@ -5,37 +5,37 @@ INCLUDE "globals.asm"
    SECTION "AI",ROM0
 
 AI::
-   ; check if we have any parasites
-   ; max 4 parasites
+   ; check if we have any hunters
+   ; max 4 hunters
    ld A,[PARA_COUNT]
    cp $04
-   jr nc,.no_load_parasite
+   jr nc,.no_load_hunter
    or $00
-   jr z,.load_parasite
+   jr z,.load_hunter
 
-   ; check random, $01/$FF chance to load a parasite
+   ; check random, $01/$FF chance to load a hunter
    ; destroys B
    call Get_Random
    cp $02
-   jr nc,.no_load_parasite
+   jr nc,.no_load_hunter
 
-.load_parasite
+.load_hunter
    ; find the first unused sprite
    ld HL,OAM_MIRROR + $03   ; skip the player sprite in the OAM_MIRROR
    ld E,$28
    ; point HL at the tile
    ; 40 possible sprites
-.find_unused_tile_parasite
+.find_unused_tile_hunter
    dec E
    ld A,E
    or $00
-   jr z,.no_load_parasite
+   jr z,.no_load_hunter
    ld A,L
    add $04
    ld L,A
    ld A,[HL]
    cp $00
-   jr nz,.find_unused_tile_parasite
+   jr nz,.find_unused_tile_hunter
 
    ; point HL at the y attrib for that sprite
    dec HL
@@ -49,7 +49,7 @@ AI::
    ; x pos = 0 for now
    xor A
    ld [HL+],A
-   ; tile, parasite = 4
+   ; tile, hunter = 4
    ld A,$03
    ld [HL+],A
    ; attribs
@@ -59,7 +59,7 @@ AI::
    ld HL,PARA_COUNT
    inc [HL]
 
-.no_load_parasite
+.no_load_hunter
 
 ; sheep loading
 
@@ -79,10 +79,10 @@ AI::
    cp $02
    jp z,.sheep_movement
    cp $03
-   jr z,.parasite_movement
-   jr .movement            ; if not a parasite or sheep, skip it
+   jr z,.hunter_movement
+   jr .movement            ; if not a hunter or sheep, skip it
 
-.parasite_movement
+.hunter_movement
    push DE                 ; our main loop needs these two
    push HL
    
@@ -92,7 +92,7 @@ AI::
    ld E,$0                 ; use E to keep track of our negatives/positives
    
    ; calculate the deltas
-   ; deltay = player_y - parasite_y
+   ; deltay = player_y - hunter_y
    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
    ; change PLAYER_X and PLAYER_Y to whatever target coords we want.
    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -107,7 +107,7 @@ AI::
    set 0,E                 ; e%0 = dy is negative
 .skip_delta_y_neg
    
-   ; deltax = player_x - parasite_x
+   ; deltax = player_x - hunter_x
    ld A,[HL]
    ld C,A
    ld [PARA_X],A
@@ -164,7 +164,7 @@ AI::
    jr nz,.check_dy_neg
    bit 2,E
    jr nz,.check_dy_neg
-   ld HL,PARA_Y            ; y = parasite_y + 1
+   ld HL,PARA_Y            ; y = hunter_y + 1
    inc [HL]
    
 .check_dy_neg
@@ -172,7 +172,7 @@ AI::
    jr z,.ret
    bit 2,E
    jr z,.ret
-   ld HL,PARA_Y            ; y = parasite_y - 1
+   ld HL,PARA_Y            ; y = hunter_y - 1
    dec [HL]
    
 
@@ -199,7 +199,7 @@ AI::
    jr nz,.check_dx_neg
    bit 2,E
    jr nz,.check_dx_neg
-   ld HL,PARA_X            ; x = parasite_x + 1
+   ld HL,PARA_X            ; x = hunter_x + 1
    inc [HL]
    
 .check_dx_neg
@@ -207,7 +207,7 @@ AI::
    jr z,.pre_return_mov
    bit 2,E
    jr z,.pre_return_mov
-   ld HL,PARA_X            ; x = parasite_x - 1
+   ld HL,PARA_X            ; x = hunter_x - 1
    dec [HL]
 
 .pre_return_mov
