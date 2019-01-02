@@ -180,7 +180,7 @@ Main:
    ld [DE],A
    inc DE
    ld A,E
-   cp $40               ; because the TDT is $xx00, and we want to load $40 tiles, we can just check for when our TDT-pointing register has $40 in the least significant register.
+   cp $50               ; because the TDT is $xx00, and we want to load $40 tiles, we can just check for when our TDT-pointing register has $40 in the least significant register.
    jr nz,.copy_to_tdt
 
    ; clear out the bg map from 9904 to 992F (nintendo logo)
