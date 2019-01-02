@@ -1,5 +1,4 @@
 ;***************************************** SHEPARD
-; A sort of reverse breakout game.
 ; The goal is to keep EVERYTHING under $400 bytes.
 ; In pursuit of this goal, I may be doing some stupid stuff.
 ; I'm not optimizing for CPU time, I'm optimizing for byte size.
