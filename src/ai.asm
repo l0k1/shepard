@@ -61,7 +61,7 @@ AI::
 
 .no_load_parasite
 
-; cow loading
+; sheep loading
 
 ; movement
 ; do this one sprite at a time
@@ -77,10 +77,10 @@ AI::
    ld L,A                  ; inc HL by 4 to check the next sprite
    ld A,[HL]
    cp $02
-   jp z,.cow_movement
+   jp z,.sheep_movement
    cp $03
    jr z,.parasite_movement
-   jr .movement            ; if not a parasite or cow, skip it
+   jr .movement            ; if not a parasite or sheep, skip it
 
 .parasite_movement
    push DE                 ; our main loop needs these two
@@ -215,7 +215,7 @@ AI::
    pop DE
    jp .movement
 
-.cow_movement
+.sheep_movement
 .ret
 
    ret
