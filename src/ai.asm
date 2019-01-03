@@ -92,18 +92,41 @@ AI::
 
    ret
 
-
-; ORIG_X, ORIG_Y, DEST_X, DEST_Y
-; SLOPE_X, SLOPE_Y
-; MOVE_FLAGS +\-x,+\-y, x_move, y_move
-;
-; SLOPE_X = B
-; SLOPE_Y = C
-; MOVE_FLAGS = E
+   SECTION "Sprite Handling",ROM0
+   ; find first unused sprite
+Find_Unused_Tile:
+   ; find the first unused sprite
+   ld HL,OAM_MIRROR
+   ld E,$27
+   ; point HL at the tile
+   ; 39 possible sprites not including the player
+   ; HL will be 0 if none found
+   ; else HL will have Y attrib of the sprite
+.loop
+   dec E
+   ld A,E
+   or $00
+   jr z,.none_found
+   ld A,L
+   add $04
+   ld L,A
+   ld A,[HL]
+   cp $00
+   jr nz,.loop
+   ld A,L
+   sub $02
+   ld L,A
+   jr nc,.retu
+   dec H
+   ret
+.none_found
+   ld HL,$0000
+.retu
+   ret
 
    SECTION "Pathing",ROM0
 
-Get_Step::
+Get_Step:
    ; needs ORIG_X and ORIG_Y set to the sprites location
    ; needs DEST_X and DEST_Y set to the destination
    ; returns flags in E, such that:
