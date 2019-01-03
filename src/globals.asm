@@ -15,8 +15,6 @@ ORIG_X:: DS 1
 ORIG_Y:: DS 1
 DEST_X:: DS 1
 DEST_Y:: DS 1
-PLAYER_X:: DS 1
-PLAYER_Y:: DS 1
 
 ;GFX update flags
 ;if bit 0 = 1, perform DMA update.
@@ -24,4 +22,8 @@ GFX_UPDATE_FLAGS:: DS 1
 
    SECTION "OAM Mirror",WRAM0,ALIGN[8]
 ;OAM Mirror. Put sprite updates here.
-OAM_MIRROR:: DS $A0
+PLAYER_X:: DS 1
+PLAYER_Y:: DS 1
+PLAYER_SPRITE:: DS 1
+PLAYER_FLAGS:: DS 1
+OAM_MIRROR:: DS $9C

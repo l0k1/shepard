@@ -1,7 +1,5 @@
 ;* This file contains global constants.
 
-; THIS FILE DESPERATELY NEEDS CLEANING.
-
 ; Make sure all this data is only loaded once.
    IF !DEF(GLOBALS_ASM)
 GLOBALS_ASM SET 1
