@@ -1,4 +1,8 @@
 ; AI routines
+; hunters make a beeline for the player
+; sheep follow around the player
+; the player can only move up and down, not back
+; plasma balls go in a straight line horizontally
 
 INCLUDE "globals.asm"
 
@@ -7,7 +11,7 @@ INCLUDE "globals.asm"
 AI::
    ; check if we have any hunters
    ; max 4 hunters
-   ld A,[PARA_COUNT]
+   ld A,[HUNTER_COUNT]
    cp $04
    jr nc,.no_load_hunter
    or $00
@@ -56,7 +60,7 @@ AI::
    xor A
    ld [HL+],A
 
-   ld HL,PARA_COUNT
+   ld HL,HUNTER_COUNT
    inc [HL]
 
 .no_load_hunter
@@ -83,139 +87,103 @@ AI::
    jr .movement            ; if not a hunter or sheep, skip it
 
 .hunter_movement
-   push DE                 ; our main loop needs these two
-   push HL
-   
-   dec HL                  ; point HL at Y pos
-   dec HL
-   
-   ld E,$0                 ; use E to keep track of our negatives/positives
-   
-   ; calculate the deltas
-   ; deltay = player_y - hunter_y
-   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   ; change PLAYER_X and PLAYER_Y to whatever target coords we want.
-   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-   
-   ld A,[HL+]
-   ld B,A
-   ld [PARA_Y],A            ; save the Y for later
-   ld A,[PLAYER_Y]
-   sub B
-   ld B,A
-   jr nc,.skip_delta_y_neg
-   set 0,E                 ; e%0 = dy is negative
-.skip_delta_y_neg
-   
-   ; deltax = player_x - hunter_x
-   ld A,[HL]
-   ld C,A
-   ld [PARA_X],A
-   ld A,[PLAYER_X]
-   sub C
-   ld C,A
-   jr nc,.skip_delta_x_neg
-   set 1,E                 ; e%1 = dx is negative
-.skip_delta_x_neg
-
-   ; b has delta_y, c has delta_x
-   ; get absolute values for b/c
-   push BC
-   
-   bit 0,E
-   jr z,.abs_x
-   ld A,B
-   cpl
-   ld B,A
-.abs_x
-   bit 1,E
-   jr z,.skip_abs_x
-   ld A,C
-   cpl
-   ld C,A
-.skip_abs_x
-
-   ; if C >= B, then X axis is major
-   ; else, Y
-   ld A,B
-   sub C
-   pop BC                  ; restore BC before jumping to save a couple bytes
-   jr c,.y_major
-.x_major
-   ; calculate error margin
-   ; error = 2 * B - C
-   rlc B
-   ld A,B
-   sub C
-   jr nc,.skip_neg_error
-   set 2,E                 ; e%2 has if error is negative (0 is dy and 1 is dx) - 1 is negative, 0 is positive
-.skip_neg_error   
-   
-   ld HL,PARA_X
-   bit 1,E                 ; if delta_x > 0 then x = x + 1
-   jr nz,.x_is_right
-   inc [HL]
-   jr .check_dy_pos
-.x_is_right                ; else x = x - 1
-   dec [HL]
-   
-.check_dy_pos   
-   bit 0,E                 ; if delta_y > 0 and error > 0 then
-   jr nz,.check_dy_neg
-   bit 2,E
-   jr nz,.check_dy_neg
-   ld HL,PARA_Y            ; y = hunter_y + 1
-   inc [HL]
-   
-.check_dy_neg
-   bit 0,E                 ; if delta_y < 0 and error < 0 then
-   jr z,.ret
-   bit 2,E
-   jr z,.ret
-   ld HL,PARA_Y            ; y = hunter_y - 1
-   dec [HL]
-   
-
-.y_major
-   ; calculate error margin
-   ; error = 2 * C - B
-   rlc C
-   ld A,C
-   sub B
-   jr nc,.skip_neg_error_y
-   set 2,E                 ; e%2 has if error is negative (0 is dy and 1 is dx) - 1 is negative, 0 is positive
-.skip_neg_error_y
-   
-   ld HL,PARA_Y
-   bit 0,E                 ; if delta_y > 0 then y = y + 1
-   jr nz,.y_is_up
-   inc [HL]
-   jr .check_dx_pos
-.y_is_up                   ; else y = y - 1
-   dec [HL]
-   
-.check_dx_pos
-   bit 1,E                 ; if delta_x > 0 and error > 0 then
-   jr nz,.check_dx_neg
-   bit 2,E
-   jr nz,.check_dx_neg
-   ld HL,PARA_X            ; x = hunter_x + 1
-   inc [HL]
-   
-.check_dx_neg
-   bit 1,E                 ; if delta_y < 0 and error < 0 then
-   jr z,.pre_return_mov
-   bit 2,E
-   jr z,.pre_return_mov
-   ld HL,PARA_X            ; x = hunter_x - 1
-   dec [HL]
-
-.pre_return_mov
-   pop HL
-   pop DE
-   jp .movement
-
 .sheep_movement
 .ret
 
+   ret
+
+
+; ORIG_X, ORIG_Y, DEST_X, DEST_Y
+; SLOPE_X, SLOPE_Y
+; MOVE_FLAGS +\-x,+\-y, x_move, y_move
+;
+; SLOPE_X = B
+; SLOPE_Y = C
+; MOVE_FLAGS = E
+
+   SECTION "Pathing",ROM0
+
+Get_Step::
+   ; needs ORIG_X and ORIG_Y set to the sprites location
+   ; needs DEST_X and DEST_Y set to the destination
+   ; returns flags in E, such that:
+   ;     0 - x is up
+   ;     1 - y is left
+   ;     2 - move in the x plane
+   ;     3 - move in the y plane
+   
+   ; this isn't a perfect algorithm, but its small and fast.
+   ; it can be made smaller by removing the *4 checks, and leaving the *2
+; reset move flags
+   ld E,0
+
+; get x slope
+   ld A,[DEST_X]
+   ld B,A
+   ld A,[ORIG_X]
+   sub B
+   jr nc,.skip_x_neg
+   cpl
+   inc A
+   set 0,E
+.skip_x_neg
+   ld B,A
+   
+; get y slope
+   ld A,[DEST_Y]
+   ld C,A
+   ld A,[ORIG_Y]
+   sub C
+   jr nc,.skip_y_neg
+   cpl
+   inc A
+   set 1,E
+.skip_y_neg
+   ld C,A
+      
+   ; if slope_x = slope_y, move both x and y
+   cp B
+   jr z,.set_2_3
+   
+   ; if slope_y * 2 = slope_x, move both x and y
+.check_mult_y_2
+   rlca
+   cp B
+   jr z,.set_2_3
+   
+   ; if slope_y * 4 = slope_x, move both x and y
+.check_mult_y_4
+   rlca
+   cp B
+   jr z,.set_2_3
+   
+   ; if slope_x * 2 = slope_y, move both x and y
+.check_mult_x_2
+   ld A,B
+   rlca
+   cp C
+   jr z,.set_2_3
+
+   ; if slope_x * 4 = slope_y, move both x and y
+.check_mult_x_4
+   rlca
+   cp C
+   jr z,.set_2_3
+   
+   ; else move the larger one
+.check_greater
+   ; b is x
+   ; c is y
+   ld A,B
+   cp C
+   jr c,.inc_y
+   set 2,E
+   ret
+.inc_y
+   set 3,E
+   ret
+
+.set_2_3
+   set 2,E
+   set 3,E
    ret
