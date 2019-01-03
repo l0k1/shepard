@@ -25,7 +25,7 @@ AI::
 
 .load_hunter
    ; find the first unused sprite
-   ld HL,OAM_MIRROR + $03   ; skip the player sprite in the OAM_MIRROR
+   ld HL,OAM_MIRROR
    ld E,$28
    ; point HL at the tile
    ; 40 possible sprites
