@@ -1,6 +1,6 @@
 ; Math functions
 
-INCLUDE  "globals.asm"
+INCLUDE  "defines.asm"
 
 EXPORT Mul8
 EXPORT Mul8b

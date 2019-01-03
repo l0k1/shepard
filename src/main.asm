@@ -5,7 +5,7 @@
 ; If you see heresy, there's probably a reason.
 
 
-INCLUDE  "globals.asm"
+INCLUDE  "defines.asm"
 
 ;   SECTION  "Org $00",ROM0[$00]
 ;RST_00:  

@@ -2,7 +2,7 @@
 ; for now, only using the controller interrupt.
 
 
-INCLUDE "globals.asm"
+INCLUDE "defines.asm"
 EXPORT DMA
 
    SECTION "DMA",ROM0
@@ -10,7 +10,6 @@ EXPORT DMA
    ;Interrupts are not enabled/disabled here.
    ;This routine destroys all registers.
    ;This routine overwrites $FF80 to $FF8A of HRAM.
-   ;OAM_MIRROR_DMA is defined in globals.asm.
    ;556 cycles
 DMA:
    ld HL,_HRAM
@@ -26,7 +25,7 @@ DMA:
    ret
    
 .dma_routine               ;this is the routine which will be copied to $FF80+
-   ld A,OAM_MIRROR_DMA     ;2 bytes - this routine shouldn't be called directly.
+   ld A,HIGH(OAM_MIRROR)   ;2 bytes - this routine shouldn't be called directly.
    ldh [$46],A             ;2 bytes - need to be explicit with the "ldh". this is [rDMA]
    ld A,$28                ;2 bytes - waiting loop, 160 *micro*seconds
    dec A                   ;1 byte  -

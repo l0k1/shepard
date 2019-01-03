@@ -4,7 +4,7 @@
 ; the player can only move up and down, not back
 ; plasma balls go in a straight line horizontally
 
-INCLUDE "globals.asm"
+INCLUDE "defines.asm"
 
    SECTION "AI",ROM0
 

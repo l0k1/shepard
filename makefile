@@ -12,6 +12,7 @@ OUTPUT_NAME=shepard
 
 SOURCES=./src/interrupts.asm\
 		./src/globals.asm\
+		./src/defines.asm\
 		./src/main.asm\
 		./src/controller.asm\
 		./src/math.asm\
