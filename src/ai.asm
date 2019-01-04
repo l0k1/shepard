@@ -15,7 +15,7 @@ AI::
    cp $04
    jr nc,.no_load_hunter
    or $00
-   jr z,.load_hunter
+;   jr z,.load_hunter
 
    ; check random, $01/$FF chance to load a hunter
    ; destroys B
@@ -23,28 +23,11 @@ AI::
    cp $02
    jr nc,.no_load_hunter
 
-.load_hunter
-   ; find the first unused sprite
-   ld HL,OAM_MIRROR
-   ld E,$28
-   ; point HL at the tile
-   ; 40 possible sprites
-.find_unused_tile_hunter
-   dec E
-   ld A,E
-   or $00
-   jr z,.no_load_hunter
-   ld A,L
-   add $04
-   ld L,A
-   ld A,[HL]
-   cp $00
-   jr nz,.find_unused_tile_hunter
+   call Find_Unused_Tile
 
-   ; point HL at the y attrib for that sprite
-   dec HL
-   dec HL
-   dec HL
+   ld A,H
+   cp $00
+   jr z,.no_load_hunter
 
    call Get_Random
 
@@ -67,9 +50,10 @@ AI::
 
 ; sheep loading
 
-; movement
-; do this one sprite at a time
-   ld E,$28
+; main movement loop
+; loop through all of our sprites
+; and pass off to movement subroutines
+   ld E,$27
    ld HL,OAM_MIRROR + $02
 .movement
    dec E
@@ -87,6 +71,14 @@ AI::
    jr .movement            ; if not a hunter or sheep, skip it
 
 .hunter_movement
+   pop DE
+   pop HL
+   dec HL
+   dec HL
+.skip_dec_h
+   
+   
+
 .sheep_movement
 .ret
 
@@ -113,15 +105,11 @@ Find_Unused_Tile:
    ld A,[HL]
    cp $00
    jr nz,.loop
-   ld A,L
-   sub $02
-   ld L,A
-   jr nc,.retu
-   dec H
+   dec HL
+   dec HL
    ret
 .none_found
    ld HL,$0000
-.retu
    ret
 
    SECTION "Pathing",ROM0
