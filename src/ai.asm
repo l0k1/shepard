@@ -59,29 +59,62 @@ AI::
    dec E
    ld A,E
    or $00
-   jp z,.ret              ; cancel when we reach the end of the sprites
+   ret z                   ; cancel when we reach the end of the sprites
    ld A,L
    add $04
    ld L,A                  ; inc HL by 4 to check the next sprite
    ld A,[HL]
-   cp $02
-   jp z,.sheep_movement
+   ;cp $02
+   ;jp z,.sheep_movement
    cp $03
-   jr z,.hunter_movement
+   call z,Hunter_Movement
    jr .movement            ; if not a hunter or sheep, skip it
 
-.hunter_movement
-   pop DE
-   pop HL
+Hunter_Movement:
+   ; save these for our main loop
+   push DE
+   push HL
+   ; point HL at the y attribute
    dec HL
    dec HL
-.skip_dec_h
-   
-   
+   ld A,[HL+]
+   ld [ORIG_Y],A
+   ld A,[HL]
+   ld [ORIG_X],A
+   ld A,[PLAYER_Y]
+   ld [DEST_Y],A
+   ld A,[PLAYER_X]
+   ld [DEST_X],A
+   call Get_Step
+   ;     0 - x is up
+   ;     1 - y is left
+   ;     2 - move in the x plane
+   ;     3 - move in the y plane
+   ld A,[HL]
+   bit 2,E
+   jr z,.check_y
+   bit 0,E
+   jr z,.x_down
+   inc A
+   jr .check_y
+.x_down
+   dec A
 
-.sheep_movement
+.check_y
+   ld [HL-],A
+   bit 3,E
+   jr z,.ret
+   bit 1,E
+   jr z,.y_left
+   inc A
+   jr .ret
+.y_left
+   dec A
+
 .ret
-
+   ld [HL],A
+   pop HL
+   pop DE
    ret
 
    SECTION "Sprite Handling",ROM0
@@ -126,6 +159,8 @@ Get_Step:
    ; this isn't a perfect algorithm, but its small and fast.
    ; it can be made smaller by removing the *4 checks, and leaving the *2
 ; reset move flags
+   push BC
+
    ld E,0
 
 ; get x slope
@@ -189,12 +224,14 @@ Get_Step:
    cp C
    jr c,.inc_y
    set 2,E
-   ret
+   jr .retu
 .inc_y
    set 3,E
-   ret
+   jr .retu
 
 .set_2_3
    set 2,E
    set 3,E
+.retu
+   pop BC
    ret
