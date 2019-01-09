@@ -20,6 +20,7 @@ I try to make sure that building works and is error free before pushing to Githu
 I use RGBDS. I don't plan on porting it to WLA.
 
 Dependencies are [RGBDS](https://github.com/bentley/rgbds) and make.
+A Python 3 script is used to determine the ROM length during building. Lack of Python 3 will not prevent building, however.
 
 To make:
 

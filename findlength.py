@@ -24,4 +24,4 @@ while True:
     # print(str(x) + '|' + hex(length))
 
 gbrom.close()
-print('length: ' + hex(length))
+print('ROM length: ' + hex(length))

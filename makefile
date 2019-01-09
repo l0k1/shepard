@@ -27,6 +27,7 @@ shepard: $(OBJECTS)
 	@$(LINK) $(LINKFLAGS) -o $(OUTPUT_NAME).gb $(OBJECTS)
 	@echo "Tidying up image..."
 	@$(FIX) $(FFLAGS) $(OUTPUT_NAME).gb
+	@python3 ./findlength.py
 	@echo "ROM assembly complete."
 
 debug:	$(OBJECTS)
