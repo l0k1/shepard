@@ -193,10 +193,10 @@ Main:
    jr nz,.clear_bg_map
 
    ; set up for our first DMA
-   ld HL,OAM_MIRROR
-   ld A,5*8          ; player Y
+   ld HL,PLAYER_Y
+   ld A,$50          ; player Y
    ld [HL+],A
-   ld A,9*8          ; player X
+   ld A,$40          ; player X
    ld [HL+],A
    ld A,$01          ; player sprite
    ld [HL+],A

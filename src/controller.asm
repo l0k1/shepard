@@ -37,7 +37,7 @@ Controller::
    ld A,[HL]
    cp $98
    jr z,.check_up
-   dec [HL]
+   inc [HL]
 
 ;.check_left
 ;   ld A,B
@@ -57,7 +57,7 @@ Controller::
    ld A,[HL]
    cp $10
    jr z,.check_right
-   inc [HL]
+   dec [HL]
 
 .check_right
    ld A,B
