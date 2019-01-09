@@ -17,7 +17,8 @@ SOURCES=./src/interrupts.asm\
 		./src/controller.asm\
 		./src/math.asm\
 		./src/gfx_assets.asm\
-		./src/ai.asm
+		./src/ai.asm\
+      ./src/bg.asm
 OBJECTS=$(SOURCES:.asm=.o)
 
 

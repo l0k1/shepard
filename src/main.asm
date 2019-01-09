@@ -209,6 +209,9 @@ Main:
    
    ld A,$04
    ld [OAM_POINTER],A
+
+   ld A,$20
+   ld [BG_ADDR_REF],A
  
    ld A,%00000001
    ld [rIE],A        ; joypad and v-blank interrupts, yo 
