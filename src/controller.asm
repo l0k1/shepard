@@ -32,32 +32,32 @@ Controller::
    ;bit J_B,A
    ld A,B
    bit J_DOWN,A
-   jr z,.check_left
-   ld HL,PLAYER_X
-   ld A,[HL]
-   cp $98
-   jr z,.check_left
-   inc [HL]
-
-.check_left
-   ld A,B
-   bit J_LEFT,A
    jr z,.check_up
    ld HL,PLAYER_Y
    ld A,[HL]
-   cp $08
+   cp $98
    jr z,.check_up
    dec [HL]
+
+;.check_left
+;   ld A,B
+;   bit J_LEFT,A
+;   jr z,.check_up
+;   ld HL,PLAYER_Y
+;   ld A,[HL]
+;   cp $08
+;  jr z,.check_up
+;  dec [HL]
 
 .check_up
    ld A,B
    bit J_UP,A
    jr z,.check_right
-   ld HL,PLAYER_X
+   ld HL,VIRTUAL_PLAYER_X
    ld A,[HL]
    cp $10
    jr z,.check_right
-   dec [HL]
+   inc [HL]
 
 .check_right
    ld A,B
