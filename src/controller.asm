@@ -53,7 +53,7 @@ Controller::
    ld A,B
    bit J_UP,A
    jr z,.check_right
-   ld HL,VIRTUAL_PLAYER_X
+   ld HL,PLAYER_Y
    ld A,[HL]
    cp $10
    jr z,.check_right
@@ -63,13 +63,6 @@ Controller::
    ld A,B
    bit J_RIGHT,A
    jr z,.end_joypad_update
-   ld HL,PLAYER_Y
-   ld A,[HL]
-   cp $A0
-   jr z,.end_joypad_update
+   ld HL,VIRTUAL_PLAYER_X
    inc [HL]
-
-   ;bit J_SELECT,A
-   ;bit J_START,A
-.end_joypad_update
    ret

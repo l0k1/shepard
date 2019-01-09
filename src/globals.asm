@@ -15,6 +15,7 @@ ORIG_X:: DS 1
 ORIG_Y:: DS 1
 DEST_X:: DS 1
 DEST_Y:: DS 1
+VIRTUAL_PLAYER_X:: DS 1
 
 ;GFX update flags
 ;if bit 0 = 1, perform DMA update.

@@ -194,9 +194,9 @@ Main:
 
    ; set up for our first DMA
    ld HL,OAM_MIRROR
-   ld A,$4C          ; player Y
+   ld A,5*8          ; player Y
    ld [HL+],A
-   ld A,$44          ; player X
+   ld A,9*8          ; player X
    ld [HL+],A
    ld A,$01          ; player sprite
    ld [HL+],A
