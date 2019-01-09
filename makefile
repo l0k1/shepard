@@ -36,6 +36,7 @@ debug:	$(OBJECTS)
 	@$(LINK) $(LINKFLAGS) -m $(OUTPUT_NAME).map -n $(OUTPUT_NAME).sym -o $(OUTPUT_NAME).gb $(OBJECTS)
 	@echo "Tidying up image..."
 	@$(FIX) $(FFLAGS) $(OUTPUT_NAME).gb
+	@python3 ./findlength.py
 	@echo "ROM assembly complete."
 
 
