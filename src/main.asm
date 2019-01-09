@@ -216,7 +216,7 @@ Main:
    ld A,%00000001
    ld [rIE],A        ; joypad and v-blank interrupts, yo 
 
-   ld A,%11010011    ; re enable the LCD
+   ld A,%11000011    ; re enable the LCD
    ld [rLCDC],A
 
    ei
