@@ -65,4 +65,5 @@ Controller::
    jr z,.end_joypad_update
    ld HL,VIRTUAL_PLAYER_X
    inc [HL]
+.end_joypad_update
    ret

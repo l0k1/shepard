@@ -227,7 +227,7 @@ Main:
    set 0,[HL]
    
    call Controller
-   call AI   
+   ; call AI   
 
 .skip
    halt
