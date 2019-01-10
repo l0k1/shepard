@@ -17,27 +17,39 @@ Inc_BG::
    push DE
    push HL
    ld A,[BG_ADDR_REF]
-   ld H,$9A
    ld L,A
+   ld H,$9A
    ld A,[HL]
    
-   ; the actual tile will be at $9000 + (bg_addr_ref - $20) * $10 + 18 or 19
-   sub $20
+   ; the actual tile will be at $9000 + bg_addr_ref * $10 + 18 or 19
+   ; the call nc,.int_h in here are much slower, but smaller, vs using jr's
+   ld H,$90
    ; multiply by $10
    rlca
+   call nc,.inc_h
    rlca
-   ; subtract by either 1 or 2 depending on the runthru
+   call nc,.inc_h
+   ; add either 18 or 19 depending on the runthru
    ld D,A
    ld A,[BG_RUNTHRU]
+   ld E,A
    cp $00
    jr z,.add18
    cp $02
    jr z,.add18
+   ld A,D
    add $19
    jr .cont
 .add18
-   sub $18
+   ld D,A
+   add $18
 .cont
-   ; check for carry
-   
-   
+   call nc,.inc_h
+   ld L,A
+   ; HL should now, in theory, point to the bg tile to update
+   ld A,E
+
+
+.inc_h
+   inc H
+   ret
