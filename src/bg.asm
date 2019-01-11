@@ -24,6 +24,8 @@ Inc_BG::
    ; the actual tile will be at $9000 + bg_addr_ref * $10 + 18 or 19
    ; the call nc,.int_h in here are much slower, but smaller, vs using jr's
    ld H,$90
+   ; add $10 - first tile should be blank for the rest of the background
+   add $10
    ; multiply by $10
    rlca
    call nc,.inc_h
@@ -34,21 +36,20 @@ Inc_BG::
    ld A,[BG_RUNTHRU]
    ld E,A
    cp $00
-   jr z,.add18
+   jr z,.addE
    cp $02
-   jr z,.add18
+   jr z,.addE
    ld A,D
-   add $19
+   add $F
    jr .cont
-.add18
+.addE
    ld D,A
-   add $18
+   add $E
 .cont
    call nc,.inc_h
    ld L,A
    ; HL should now, in theory, point to the bg tile to update
    ld A,E
-
 
 .inc_h
    inc H
