@@ -35,8 +35,6 @@ Inc_BG::
    ld D,A
    ld A,[BG_RUNTHRU]
    ld E,A
-   cp $00
-   jr z,.addE
    cp $02
    jr z,.addE
    ld A,D
@@ -46,7 +44,7 @@ Inc_BG::
    ld D,A
    add $E
 .cont
-   call nc,.inc_h
+   call c,.inc_h
    ld L,A
    ; HL should now, in theory, point to the bg tile to update
    ld A,E
