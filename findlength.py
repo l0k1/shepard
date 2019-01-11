@@ -1,6 +1,6 @@
 import sys
 
-length_to_check = 30
+length_to_check = 100
 length = 0
 found = 0
 
