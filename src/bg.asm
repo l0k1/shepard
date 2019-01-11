@@ -10,18 +10,16 @@ INCLUDE "defines.asm"
    SECTION "BG",ROM0
 Inc_BG::
    ; call this function to increment the background scroller
+   ; 100% destructive yo
    
    ; get bg addr into HL
-   push AF
-   push BC
-   push DE
-   push HL
    ld A,[BG_ADDR_REF]
+   ld B,A
    ld L,A
    ld H,$9A
    ld A,[HL]
    
-   ; the actual tile will be at $9000 + bg_addr_ref * $10 + 18 or 19
+   ; the actual tile will be at $9000 + bg_addr_ref * $10 + E or F
    ld H,$90
    ; multiply by $10
    swap A
@@ -56,9 +54,9 @@ Inc_BG::
    rr [HL]
    cp $00
    jr nz,.cont3
-   inc [HL]
+   inc HL
    srl [HL]
-   dec [HL]
+   dec HL
    jr .cont1
 .cont3
    cp $01
@@ -71,19 +69,22 @@ Inc_BG::
    ld A,[HL]
    cp $FF
    jr nz,.cont2
-   ld HL,BG_ADDR_REF
-   ld A,[HL]
+   ; one byte smaller than ld a,[bg_addr_ref]/ld [bg_addr_ref],a
+   ld A,B
    inc A
-   ; if BG_ADDR_REF > $33, set it back to $20 and inc BG_RUNTHRU
+   ; if BG_ADDR_REF > $33, set it back to $20
    cp $33
    jr nc,.cont2
    ld A,$20
-   ld [HL],A
-   ld A,[BG_RUNTHRU]
+   ld [BG_ADDR_REF],A
+   ; if BG_RUNTHRU > 3, set it back to 0
+   ld A,E
    inc A
    cp $03
-   jr nc,.cont2
+   jr nc,.contbgrunthru
    ld A,$00
+.contbgrunthru
+   ld [BG_RUNTHRU],A
 .cont2
    ; i think that's everything?
    ret
