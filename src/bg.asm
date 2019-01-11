@@ -35,7 +35,7 @@ Inc_BG::
    ld D,A
    ld A,[BG_RUNTHRU]
    ld E,A
-   cp $02
+   cp $01
    jr z,.addE
    ld A,D
    add $F
