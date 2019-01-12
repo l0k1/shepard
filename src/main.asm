@@ -192,6 +192,15 @@ Main:
    cp $30
    jr nz,.clear_bg_map
 
+   ; set tiles from bgmap $9A20 to $9A33
+   ld A,$01
+   ld HL,$9A20
+.load_bg_map
+   ld [HL+],A
+   inc A
+   cp $15
+   jr nz,.load_bg_map
+
    ; set up for our first DMA
    ld HL,PLAYER_Y
    ld A,$50          ; player Y
