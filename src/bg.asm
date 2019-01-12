@@ -36,13 +36,13 @@ Inc_BG::
    ld A,[BG_RUNTHRU]
    ld E,A
    cp $01
-   jr z,.addE
+   jr z,.addF
+   ld A,D
+   add $E
+   jr .cont0
+.addF
    ld A,D
    add $F
-   jr .cont0
-.addE
-   ld D,A
-   add $E
 .cont0
    ld L,A
    ; HL should now, in theory, point to the bg tile to update
@@ -54,7 +54,7 @@ Inc_BG::
    rr [HL]
    cp $00
    jr nz,.cont3
-   inc HL
+   inc hl
    srl [HL]
    dec HL
    jr .cont1
@@ -66,22 +66,29 @@ Inc_BG::
    inc HL
 .cont1
    ; if HL == $FF, then we need to inc BG_ADDR_REF
-   ld A,[HL]
+   ld A,[HL+]
    cp $FF
    jr nz,.cont2
+   ld A,[HL]
+   cp $FF
+   jr z,.update_bg_addr
+   cp $00
+   jr nz,.cont2
+.update_bg_addr
    ; one byte smaller than ld a,[bg_addr_ref]/ld [bg_addr_ref],a
    ld A,B
    inc A
+   ld [BG_ADDR_REF],A
    ; if BG_ADDR_REF > $33, set it back to $20
-   cp $33
-   jr nc,.cont2
+   cp $34
+   jr c,.cont2
    ld A,$20
    ld [BG_ADDR_REF],A
    ; if BG_RUNTHRU > 3, set it back to 0
    ld A,E
    inc A
    cp $03
-   jr nc,.contbgrunthru
+   jr c,.contbgrunthru
    ld A,$00
 .contbgrunthru
    ld [BG_RUNTHRU],A
